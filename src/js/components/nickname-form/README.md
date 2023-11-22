@@ -4,20 +4,19 @@ A web component that represents a form to set and show a players nickname.
 
 ## Methods
 
-### `setNickname(value)`
+### `addNickname()`
 
-Sets the nickname for the component.
+Method that adds the nickname to the player when the submit button is pressed.
 
 #### Parameters
- - `value` (string): The new nickname to set.
 
-#### Example
-```javascript
-// Set the nickname to 'Ellen'
-nickname-form.setNickname('Ellen')
-```
+ - `event` (event): The submit event object. This parameter is automatically passed by the browser when a click event occurs.
 
-### `getNickname()`
+#### Returns
+
+Reference to self.
+
+### `get nickname()`
 
 Gets the nickname for the component.
 
@@ -27,6 +26,6 @@ Gets the nickname for the component.
 #### Example
 ```javascript
 // Get the current nickname
-const currentNickname = nickname-form.getNickname()
+const currentNickname = nickname-form.nickname
 console.log(currentNickname) // Output: Ellen
 ```

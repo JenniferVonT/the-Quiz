@@ -14,6 +14,7 @@ template.innerHTML = `
 }
 input {
     border: solid black 1px;
+    text-decoration: none;
 }
 </style>
 
@@ -31,6 +32,16 @@ customElements.define('nickname-form',
    */
   class extends HTMLElement {
     /**
+     * Represents the nickname.
+     */
+    #nickname
+
+    /**
+     * Represents the form element.
+     */
+    #form
+
+    /**
      * Creates an instance of the current type.
      */
     constructor () {
@@ -39,5 +50,51 @@ customElements.define('nickname-form',
       // Attach a shadow DOM tree to this element.
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
+
+      // Get the form element in the shadow root.
+      this.#form = this.shadowRoot.querySelector('form')
+
+      // Set the default nickname to anonymous.
+      this.#nickname = 'anonymous'
+    }
+
+    /**
+     * Called after the element is inserted into the DOM.
+     */
+    connectedCallback () {
+      // Set the eventlistener to save the nickname in the this.#nickname field.
+      this.#form.addEventListener('submit', (event) => this.addNickname(event))
+    }
+
+    /**
+     * Called after the element is removed from the DOM.
+     */
+    disconnectedCallback () {
+      this.#form.removeEventListener('submit', (event) => this.addNickname(event))
+    }
+
+    /**
+     * Get the current nickname.
+     *
+     * @returns {string} - A string representing the player nickname.
+     */
+    get nickname () {
+      return this.#nickname
+    }
+
+    /**
+     * Sets the nickname when the submit event is fired.
+     *
+     * @param {SubmitEvent} event - Set off by the event.
+     */
+    addNickname (event) {
+      event.preventDefault()
+
+      const inputNickname = this.shadowRoot.querySelector('#nickname').value
+
+      // Validate the input for length and some special characters for safety.
+      if (inputNickname.length !== 0 || inputNickname.lenght < 20 || !(inputNickname.includes('&') || inputNickname.includes('<'))) {
+        this.#nickname = inputNickname.toString()
+      }
     }
   })
