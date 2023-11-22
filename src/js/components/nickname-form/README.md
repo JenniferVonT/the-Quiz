@@ -4,7 +4,7 @@ A web component that represents a form to set and show a players nickname.
 
 ## Methods
 
-### setNickname(value)
+### `setNickname(value)`
 
 Sets the nickname for the component.
 
@@ -17,7 +17,7 @@ Sets the nickname for the component.
 nickname-form.setNickname('Ellen')
 ```
 
-### getNickname()
+### `getNickname()`
 
 Gets the nickname for the component.
 
@@ -29,3 +29,4 @@ Gets the nickname for the component.
 // Get the current nickname
 const currentNickname = nickname-form.getNickname()
 console.log(currentNickname) // Output: Ellen
+```

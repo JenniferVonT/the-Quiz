@@ -1,3 +1,12 @@
 body {
-	background: #ffffff;
+	background-image: linear-gradient(to bottom, #fcd5b1, #ffffff);
+	background-repeat: no-repeat;
+	font-size: 18px;
+	text-align: center;
+}
+h1 {
+	font-size: 3rem;
+}
+b {
+	font-size: 1.25rem;
 }
