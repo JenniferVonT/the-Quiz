@@ -90,11 +90,11 @@ customElements.define('nickname-form',
     addNickname (event) {
       event.preventDefault()
 
-      const inputNickname = this.shadowRoot.querySelector('#nickname').value
+      const inputNickname = this.shadowRoot.querySelector('#nickname').value.toString()
 
       // Validate the input for length and some special characters for safety.
-      if (inputNickname.length !== 0 || inputNickname.lenght < 20 || !(inputNickname.includes('&') || inputNickname.includes('<'))) {
-        this.#nickname = inputNickname.toString()
+      if ((inputNickname.length !== 0 || inputNickname.lenght < 20) && !(inputNickname.includes('&') || inputNickname.includes('<'))) {
+        this.#nickname = inputNickname
       }
     }
   })

@@ -12,16 +12,9 @@ Method that adds the nickname to the player when the submit button is pressed.
 
  - `event` (event): The submit event object. This parameter is automatically passed by the browser when a click event occurs.
 
-#### Returns
-
-Reference to self.
-
 ### `get nickname()`
 
 Gets the nickname for the component.
-
-#### Returns
- - (string): The current nickname.
 
 #### Example
 ```javascript
