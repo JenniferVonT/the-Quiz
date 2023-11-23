@@ -31,4 +31,3 @@ console.log(timeLeft) // Output example: 10
 ```
 
 ![Example](./img/countdown.PNG)
-![Example](./img/countdownWarning.PNG)
