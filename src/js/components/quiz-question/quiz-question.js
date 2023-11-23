@@ -11,7 +11,7 @@ template.innerHTML = `
     :host {
         display: inline-block;
         background-color: rgba(0, 0, 0, 0);
-        width: 30vw;
+        width: 600px;
     }
 
     fieldset {
@@ -19,12 +19,13 @@ template.innerHTML = `
         border: solid black 2px;
         padding: 2em;
         margin: 2em;
+        height: min-content;
     }
 
     #multipleChoice {
         display: grid;
         gap: 0.6em;
-        grid-template-columns: 3fr 1fr;
+        grid-template-columns: 1fr 1fr;
     }
     
     .hidden {
@@ -94,20 +95,22 @@ customElements.define('quiz-question',
       this.#form = this.shadowRoot.querySelector('form')
       this.#finalAnswer = {}
       this.input = this.shadowRoot.querySelector('.final')
+
+      this.#multipleChoice.classList.add('hidden')
     }
 
     /**
      * Called after the element is inserted into the DOM.
      */
     connectedCallback () {
-      this.#form.addEventListener('submit', event => this.addAnswer(event))
+      this.#form.addEventListener('submit', event => this.#addAnswer(event))
     }
 
     /**
      * Called after the element has been removed from the DOM.
      */
     disconnectedCallback () {
-      this.#form.removeEventListener('submit', event => this.addAnswer(event))
+      this.#form.removeEventListener('submit', event => this.#addAnswer(event))
     }
 
     /**
@@ -115,7 +118,7 @@ customElements.define('quiz-question',
      *
      * @param {Event} event - A submit event.
      */
-    addAnswer (event) {
+    #addAnswer (event) {
       event.stopDefault()
       this.#finalAnswer = this.input.value
     }
@@ -134,11 +137,51 @@ customElements.define('quiz-question',
      *
      * @param {object} questionObject - containing string values with questions and answers.
      */
-    showQuestion (questionObject) {}
+    showQuestion (questionObject) {
+      this.#updateHiddenClass(questionObject)
+
+      const { question, ...alternatives } = questionObject
+
+      this.#question.textContent = question
+      const alt1 = 'alt1'
+
+      // When it is a multiple choice question, create input elements.
+      if (alt1 in questionObject) {
+        for (const [key, value] of Object.entries(alternatives)) {
+          // Create all neccessary elements and set attributes.
+          const input = document.createElement('input')
+          const label = document.createElement('label')
+          const answerAlt = document.createTextNode(value)
+          input.setAttribute('type', 'radio')
+          input.setAttribute('name', 'answers')
+          input.setAttribute('id', key)
+
+          label.style.gridColumn = '1 / span 2'
+
+          // Put them all together.
+          label.append(answerAlt)
+          label.append(input)
+
+          this.#multipleChoice.append(label)
+        }
+      }
+    }
 
     /**
-     * Update the rendering being shown to the user.
+     * Update the hidden class if the question is a multiple choice answer or not.
+     *
+     * @param {object} question - The object with questions and answer alternatives.
      */
-    #updateRender () {}
+    #updateHiddenClass (question) {
+      const alt1 = 'alt1'
+
+      if (alt1 in question && this.#multipleChoice.classList.contains('hidden')) {
+        this.#multipleChoice.classList.toggle('hidden')
+        this.#writtenAnswer.classList.toggle('hidden')
+      } else if (alt1 in question && this.#writtenAnswer.classList.contains('hidden')) {
+        this.#multipleChoice.classList.toggle('hidden')
+        this.#writtenAnswer.classList.toggle('hidden')
+      }
+    }
   }
 )
