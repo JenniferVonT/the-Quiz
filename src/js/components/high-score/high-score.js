@@ -34,8 +34,6 @@ template.innerHTML = `
         <li id="5"></li>
     </ol>
 </div>
-
-<button>Try again!</button>
 `
 
 customElements.define('high-score',
@@ -43,6 +41,31 @@ customElements.define('high-score',
    * Represents a high-score element.
    */
   class extends HTMLElement {
+    /**
+     * Represents the first place on the list.
+     */
+    #firstPlace
+
+    /**
+     * Represents the second place on the list.
+     */
+    #secondPlace
+
+    /**
+     * Represents the third place on the list.
+     */
+    #thirdPlace
+
+    /**
+     * Represents the fourt place on the list.
+     */
+    #fourthPlace
+
+    /**
+     * Represents the fift place on the list.
+     */
+    #fifthPlace
+
     /**
      * Creates an instance of the current type.
      */
@@ -52,6 +75,19 @@ customElements.define('high-score',
       // Attach a shadow DOM tree to this element.
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
+
+      this.#firstPlace = this.shadowRoot.querySelector('#1')
+      this.#secondPlace = this.shadowRoot.querySelector('#2')
+      this.#thirdPlace = this.shadowRoot.querySelector('#3')
+      this.#fourthPlace = this.shadowRoot.querySelector('#4')
+      this.#fifthPlace = this.shadowRoot.querySelector('#5')
     }
+
+    /**
+     * Builds the high-score list.
+     *
+     * @param {object} listObject - An object with a list of player nicknames and their scores.
+     */
+    buildList (listObject) {}
   }
 )

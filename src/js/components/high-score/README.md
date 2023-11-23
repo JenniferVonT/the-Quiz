@@ -30,4 +30,4 @@ high-score.buildList(playerList)
 <high-score></high-score>
 ```
 
-![Example]()
+![Example](./img/highScoreComponent.PNG)
