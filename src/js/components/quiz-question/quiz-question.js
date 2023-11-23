@@ -38,7 +38,7 @@ template.innerHTML = `
   <form id="answer" method="POST">
 
     <fieldset id="writtenAnswer">
-      <input type="text">
+      <input type="text" class="final">
     </fieldset>
 
     <fieldset id="multipleChoice">
@@ -80,6 +80,16 @@ customElements.define('quiz-question',
     #finalAnswer
 
     /**
+     * Represents the radio input values when there's multiple choice questions.
+     */
+    #radioInput
+
+    /**
+     * Represents the written answer when there isn't multiple choice questions.
+     */
+    #singleInput
+
+    /**
      * Creates an instance of the current type.
      */
     constructor () {
@@ -94,7 +104,7 @@ customElements.define('quiz-question',
       this.#question = this.shadowRoot.querySelector('#question')
       this.#form = this.shadowRoot.querySelector('form')
       this.#finalAnswer = {}
-      this.input = this.shadowRoot.querySelector('.final')
+      this.#singleInput = this.shadowRoot.querySelector('.final')
 
       this.#multipleChoice.classList.add('hidden')
     }
@@ -119,8 +129,15 @@ customElements.define('quiz-question',
      * @param {Event} event - A submit event.
      */
     #addAnswer (event) {
-      event.stopDefault()
-      this.#finalAnswer = this.input.value
+      event.preventDefault()
+
+      this.#radioInput = this.shadowRoot.querySelector('input[name="answers"]:checked')
+
+      if (this.#singleInput.value.length !== 0) {
+        this.#finalAnswer = this.#singleInput.value
+      } else if (this.#radioInput) {
+        this.#finalAnswer = this.#radioInput.value
+      }
     }
 
     /**
@@ -154,7 +171,7 @@ customElements.define('quiz-question',
           const answerAlt = document.createTextNode(value)
           input.setAttribute('type', 'radio')
           input.setAttribute('name', 'answers')
-          input.setAttribute('id', key)
+          input.setAttribute('value', `${key}: ${value}`)
 
           label.style.gridColumn = '1 / span 2'
 
