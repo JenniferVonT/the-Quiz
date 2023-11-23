@@ -18,7 +18,7 @@ Gets the nickname for the component.
 
 #### Example
 ```javascript
-// Get the current nickname
+// Get the current nickname.
 const currentNickname = nickname-form.nickname
-console.log(currentNickname) // Output: Ellen
+console.log(currentNickname) // Output example: Ellen
 ```
