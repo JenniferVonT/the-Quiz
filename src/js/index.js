@@ -5,4 +5,8 @@
  * @version 1.1.0
  */
 
-import './components/nickname-form/index.js'
+import './components/nickname-form/'
+import './components/countdown-timer/'
+import './components/high-score/'
+import './components/quiz-question/'
+import './components/quiz-application/'
