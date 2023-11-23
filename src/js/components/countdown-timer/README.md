@@ -29,3 +29,6 @@ console.log(timeLeft) // Output example: 10
 ```html
 <countdown-timer time="15"></countdown-timer>
 ```
+
+![Example](./img/countdown.PNG)
+![Example](./img/countdownWarning.PNG)

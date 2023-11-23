@@ -19,6 +19,9 @@ template.innerHTML = `
     #timer {
         font-size: 1.5rem;
     }
+    .warning {
+      color: red;
+    }
 </style>
 <div id="container">
     <p>Time left: <b id="timer"></b></p>
@@ -31,14 +34,14 @@ customElements.define('countdown-timer',
    */
   class extends HTMLElement {
     /**
-     * The container for the timer element.
-     */
-    #timerBoard
-
-    /**
      * Represents the timer.
      */
-    #timer
+    #countdown
+
+    /**
+     * Represents the time left on the countdown when finished.
+     */
+    #finishTime
 
     /**
      * Creates an instance of the current type.
@@ -50,8 +53,8 @@ customElements.define('countdown-timer',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
-      this.#timerBoard = this.shadowRoot.querySelector('#container')
-      this.#timer = this.shadowRoot.querySelector('#timer')
+      this.#countdown = this.shadowRoot.querySelector('#timer')
+      this.#finishTime = ''
     }
 
     /**
@@ -72,12 +75,16 @@ customElements.define('countdown-timer',
       }
 
       this.#upgradeProperty('time')
+      this.runTimer()
     }
 
     /**
      * Called after the element has been removed from the DOM.
      */
-    // disconnectedCallbak () {}
+    disconnectedCallbak () {
+      clearInterval(this.count)
+      this.#countdown.classList.remove('warning')
+    }
 
     /**
      * Run the specified instance property
@@ -99,20 +106,33 @@ customElements.define('countdown-timer',
      * @returns {string} - A string representing the number of seconds left.
      */
     get timeLeft () {
-      return this.#timer.textContent
+      return this.#finishTime
     }
 
     /**
      * Method that start and runs the timer.
      */
-    startTimer () {}
+    runTimer () {
+      let startTime = this.getAttribute('time')
+      this.#updateRender(startTime)
+
+      this.count = setInterval(() => {
+        this.#updateRender(startTime--)
+        this.#finishTime = startTime + 1
+      }, 1000)
+    }
 
     /**
      * Update the rendering for the timer.
      *
      * @param {string} time - A string representing the time left to be shown to the user.
      */
-    updateRender (time) {
-      this.#timer.textContent = `${time}`
+    #updateRender (time) {
+      if (time >= 4) {
+        this.#countdown.textContent = `${time}`
+      } else if (time >= 0) {
+        this.#countdown.classList.add('warning')
+        this.#countdown.textContent = `${time}`
+      }
     }
   })
