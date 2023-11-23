@@ -37,3 +37,12 @@ Gets the answer the user gave for the question.
 const answer = quiz-question.answer
 console.log(answer) // Output example: alt2: 'no'
 ```
+
+## Example
+
+```html
+<quiz-question></quiz-question>
+```
+The first is the layout for a question with no answer alternatives sent and the second for a question with multiple answer alternative
+
+![Example](./img/answerInput.PNG)

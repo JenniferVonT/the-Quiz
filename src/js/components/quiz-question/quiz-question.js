@@ -24,8 +24,7 @@ template.innerHTML = `
 
     #multipleChoice {
         display: grid;
-        gap: 0.6em;
-        grid-template-columns: 1fr 1fr;
+        gap: 1em;
     }
     
     .hidden {
@@ -99,6 +98,7 @@ customElements.define('quiz-question',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
+      // Bind the relevant elements.
       this.#writtenAnswer = this.shadowRoot.querySelector('#writtenAnswer')
       this.#multipleChoice = this.shadowRoot.querySelector('#multipleChoice')
       this.#question = this.shadowRoot.querySelector('#question')
@@ -126,7 +126,7 @@ customElements.define('quiz-question',
     /**
      * Adds the submit input event value to the variable #finalAnswer.
      *
-     * @param {Event} event - A submit event.
+     * @param {Event} event - A submit event on a form.
      */
     #addAnswer (event) {
       event.preventDefault()
@@ -172,8 +172,6 @@ customElements.define('quiz-question',
           input.setAttribute('type', 'radio')
           input.setAttribute('name', 'answers')
           input.setAttribute('value', `${key}: ${value}`)
-
-          label.style.gridColumn = '1 / span 2'
 
           // Put them all together.
           label.append(answerAlt)
