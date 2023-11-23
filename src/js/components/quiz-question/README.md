@@ -1,17 +1,17 @@
 # &lt;quiz-question&gt;
 
-A web component that represents quiz questions and answers.
+A web component that represents quiz questions and/or answers.
 
 ## Methods
 
 ### `showQuestion(object)`
 
-A method that takes an object with a question and one or several answers and renders them for the user to choose.
- - One answer: writing input, answer is not shown to the user.
- - Multiple answers: radio dials to choose from all the answers.
+A method that takes an object with a question and none or several answer alternatives and renders them for the user to choose/write.
+ - No answer: writing input, user cannot see any answers.
+ - Multiple answer alternatives: radio dials to choose from all the alternatives.
 
 #### Parameters
-- `object` (object): An object containing a question and one or multiple strings with answer choices.
+- `object` (object): An object containing a question and none or multiple answer alternatives.
 
 #### Example
 ```javascript
@@ -33,7 +33,7 @@ Gets the answer the user gave for the question.
 
 #### Example
 ```javascript
-// Get the answer the USER gave, not neccessarily the right choice.
+// Get the answer the USER gave, it does not validate if the answer is correct or not.
 const answer = quiz-question.answer
 console.log(answer) // Output example: alt2: 'no'
 ```
