@@ -12,9 +12,22 @@ Default value: 20 seconds.
 
 ## Methods
 
-### `get timeLeft`
+### `startTimer()`
+
+A method that starts the timer.
+
+#### Example
+
+```javascript
+// Bind the countdown-timer element to a constant.
+const timer = document.querySelector('countdown-timer')
+// Start the timer.
+timer.startTimer() 
+```
+
+### `get timeToFinish`
  
-Gets the time left on the timer.
+Get the time it took from start to stop.
 
 #### Example
 

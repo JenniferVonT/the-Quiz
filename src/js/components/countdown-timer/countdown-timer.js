@@ -39,9 +39,14 @@ customElements.define('countdown-timer',
     #countdown
 
     /**
-     * Represents the time left on the countdown when finished.
+     * Represents the time it took from start to stop.
      */
-    #finishTime
+    #timeLeft
+
+    /**
+     * Gets the timer to stop and start.
+     */
+    #run
 
     /**
      * Creates an instance of the current type.
@@ -54,7 +59,8 @@ customElements.define('countdown-timer',
         .appendChild(template.content.cloneNode(true))
 
       this.#countdown = this.shadowRoot.querySelector('#timer')
-      this.#finishTime = ''
+      this.#timeLeft = ''
+      this.#run = false
     }
 
     /**
@@ -75,14 +81,13 @@ customElements.define('countdown-timer',
       }
 
       this.#upgradeProperty('time')
-      this.runTimer()
     }
 
     /**
      * Called after the element has been removed from the DOM.
      */
     disconnectedCallbak () {
-      clearInterval(this.count)
+      this.stopTimer()
       this.#countdown.classList.remove('warning')
     }
 
@@ -101,25 +106,48 @@ customElements.define('countdown-timer',
     }
 
     /**
-     * Get the time left on the timer.
+     * Get the time it took from start to finish in seconds.
      *
-     * @returns {string} - A string representing the number of seconds left.
+     * @returns {number} - The number of seconds.
      */
-    get timeLeft () {
-      return this.#finishTime
+    get timeToFinish () {
+      const startTotal = parseInt(this.getAttribute('time'), 10)
+      return startTotal - this.#timeLeft
     }
 
     /**
      * Method that start and runs the timer.
      */
-    runTimer () {
-      let startTime = this.getAttribute('time')
+    startTimer () {
+      this.#run = true
+      let startTime = parseInt(this.getAttribute('time'), 10)
       this.#updateRender(startTime)
 
+      // Set an interval of 1sec and update the number shown every second.
       this.count = setInterval(() => {
-        this.#updateRender(startTime--)
-        this.#finishTime = startTime + 1
+        if (this.#run && startTime > 0) {
+          this.#updateRender(startTime--)
+          this.#timeLeft = startTime + 1
+        }
+
+        // If the timer hits 0, stop it and trigger a dispatchEvent.
+        if (startTime < 0) {
+          this.stopTimer()
+
+          const event = new Event('timeOut', {
+            bubbles: true
+          })
+          this.dispatchEvent(event)
+        }
       }, 1000)
+    }
+
+    /**
+     * Method that stops the timer.
+     */
+    stopTimer () {
+      this.#run = false
+      clearInterval(this.count)
     }
 
     /**
@@ -128,7 +156,7 @@ customElements.define('countdown-timer',
      * @param {string} time - A string representing the time left to be shown to the user.
      */
     #updateRender (time) {
-      if (time >= 4) {
+      if (time > 4) {
         this.#countdown.textContent = `${time}`
       } else if (time >= 0) {
         this.#countdown.classList.add('warning')

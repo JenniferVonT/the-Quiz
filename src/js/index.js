@@ -10,13 +10,3 @@ import './components/countdown-timer/'
 import './components/high-score/'
 import './components/quiz-question/'
 import './components/quiz-application/'
-
-const scoreList = {
-  Kalle: '63',
-  Jennifer: '55',
-  Frida: '95'
-}
-
-const highScore = document.querySelector('high-score')
-
-highScore.buildList(scoreList)
