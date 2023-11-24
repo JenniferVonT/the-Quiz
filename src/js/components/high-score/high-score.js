@@ -26,13 +26,7 @@ template.innerHTML = `
 <div id="container">
     <p>Top 5 players!</p>
     <i>(names and seconds of the quickest players)</i>
-    <ol>
-        <li id="1"></li>
-        <li id="2"></li>
-        <li id="3"></li>
-        <li id="4"></li>
-        <li id="5"></li>
-    </ol>
+    <ol id="list"></ol>
 </div>
 `
 
@@ -42,29 +36,9 @@ customElements.define('high-score',
    */
   class extends HTMLElement {
     /**
-     * Represents the first place on the list.
+     * Represents the list.
      */
-    #firstPlace
-
-    /**
-     * Represents the second place on the list.
-     */
-    #secondPlace
-
-    /**
-     * Represents the third place on the list.
-     */
-    #thirdPlace
-
-    /**
-     * Represents the fourt place on the list.
-     */
-    #fourthPlace
-
-    /**
-     * Represents the fift place on the list.
-     */
-    #fifthPlace
+    #scoreList
 
     /**
      * Creates an instance of the current type.
@@ -76,11 +50,7 @@ customElements.define('high-score',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
-      this.#firstPlace = this.shadowRoot.querySelector('#1')
-      this.#secondPlace = this.shadowRoot.querySelector('#2')
-      this.#thirdPlace = this.shadowRoot.querySelector('#3')
-      this.#fourthPlace = this.shadowRoot.querySelector('#4')
-      this.#fifthPlace = this.shadowRoot.querySelector('#5')
+      this.#scoreList = this.shadowRoot.querySelector('#list')
     }
 
     /**
@@ -88,6 +58,29 @@ customElements.define('high-score',
      *
      * @param {object} listObject - An object with a list of player nicknames and their scores.
      */
-    buildList (listObject) {}
+    buildList (listObject) {
+      // Turn the object into an array and sort it from smallest to largest score.
+      const players = Object.entries(listObject)
+
+      players.forEach(([player, score], i) => {
+        players[i][1] = parseInt(score, 10)
+      })
+
+      players.sort((a, b) => a[1] - b[1])
+
+      // Start a counter and append list items with the top 5 players into the ol list.
+      for (let i = 0; i < 5; i++) {
+        const liElement = document.createElement('li')
+        const player = players[i]
+
+        if (player !== undefined) {
+          const playerAndScore = document.createTextNode(`${player[0]}: ${player[1]}`)
+          liElement.append(playerAndScore)
+          this.#scoreList.append(liElement)
+        }
+        // If there is no players just append an empty list element.
+        this.#scoreList.append(liElement)
+      }
+    }
   }
 )

@@ -17,7 +17,7 @@ const playerList = {
     Kalle: '63',
     Jennifer: '55',
     Frida: '95',
-    Sabrina: '50',
+    Robin: '50',
     // ...
 }
 
