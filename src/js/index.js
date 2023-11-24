@@ -20,10 +20,3 @@ const scoreList = {
 const highScore = document.querySelector('high-score')
 
 highScore.buildList(scoreList)
-/*
-<li id="1"></li>
-<li id="2"></li>
-<li id="3"></li>
-<li id="4"></li>
-<li id="5"></li>
-*/
