@@ -37,6 +37,23 @@ const timeLeft = countdown-timer.timeLeft
 console.log(timeLeft) // Output example: 10
 ```
 
+## Custom Events
+
+### `timeOut`
+
+When the timer reaches 0.
+
+#### Example
+
+```javascript
+document.addEventListener('timeOut', function(){
+    /*Handle event here*/
+})
+or
+// implement the function outside the event listener.
+document.addEventListener('timeOut', () => function())
+```
+
 ## Example
 
 ```html

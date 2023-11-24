@@ -13,6 +13,11 @@ import '../quiz-question/'
 const template = document.createElement('template')
 template.innerHTML = `
 <style>
+    button {
+        width: 100px;
+        height: 30px;
+        margin: 2em;
+    }
     .hidden {
         display: none;
     }
@@ -27,6 +32,7 @@ template.innerHTML = `
   <quiz-question></quiz-question>
   <countdown-timer></countdown-timer>
   <high-score></high-score>
+  <button>Try Again!</button>
 `
 
 customElements.define('quiz-application',
@@ -60,6 +66,11 @@ customElements.define('quiz-application',
     #highScore
 
     /**
+     * Represents a button
+     */
+    #button
+
+    /**
      * Creates an instance of the current type.
      */
     constructor () {
@@ -74,14 +85,59 @@ customElements.define('quiz-application',
       this.#timer = this.shadowRoot.querySelector('countdown-timer')
       this.#question = this.shadowRoot.querySelector('quiz-question')
       this.#highScore = this.shadowRoot.querySelector('high-score')
+      this.#button = this.shadowRoot.querySelector('button')
+
+      // Hide all components that aren't going to be visible in the beginning of the game.
+      this.#timer.classList.add('hidden')
+      this.#question.classList.add('hidden')
+      this.#highScore.classList.add('hidden')
+      this.#button.classList.add('hidden')
+
+      this.player = ''
+      this.score = 0
     }
 
+    /**
+     * Called when the element is inserted into the DOM.
+     */
     connectedCallback () {
-    // this.#timer.addEventListener('timeOut', () => endGame())
+      this.#nickname.addEventListener('submit', () => this.#handleQuestion())
+      this.#timer.addEventListener('timeOut', () => this.#endGame())
+      this.#question.addEventListener('submit', () => this.#handleScore())
+      this.#button.addEventListener('click', () => this.#restart())
     }
 
-    disconnectedCallback () {}
+    /**
+     * Called when the element is removed from the DOM.
+     */
+    disconnectedCallback () {
+      this.#nickname.removeEventListener('submit', () => this.#handleQuestion())
+      this.#timer.removeEventListener('timeOut', () => this.#endGame())
+      this.#question.removeEventListener('submit', () => this.#handleScore())
+      this.#button.removeEventListener('click', () => this.#restart())
+    }
 
-    endGame () {}
+    /**
+     * Handles the communication bewteen the server and components regarding the questions and answers.
+     */
+    #handleQuestion() {}
+
+    /**
+     * Handles the communication bewteen the webStorage and components regarding the players and scores.
+     */
+    #handleScore () {}
+
+    /**
+     * Ends the game and shows you the high-score list.
+     */
+    #endGame () {
+      this.#highScore.classList.toggle('hidden')
+      this.#button.classList.toggle('hidden')
+    }
+
+    /**
+     * Restarts the game to the beginning.
+     */
+    #restart () {}
   }
 )

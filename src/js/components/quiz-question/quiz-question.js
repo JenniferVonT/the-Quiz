@@ -138,6 +138,7 @@ customElements.define('quiz-question',
       } else if (this.#radioInput) {
         this.#finalAnswer = this.#radioInput.value
       }
+      this.dispatchEvent('submit')
     }
 
     /**
