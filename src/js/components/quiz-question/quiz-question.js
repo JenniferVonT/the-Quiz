@@ -31,20 +31,24 @@ template.innerHTML = `
         display: none !important;
     }
 
+    h2 {
+      height: 20px;
+    }
+
 </style>
 
   <form id="answer" method="POST">
     <h2 id="question"></h2>
 
     <fieldset id="writtenAnswer">
-      <input type="text" class="final">
+      <input type="text" class="final" autocomplete="off" autofocus />
     </fieldset>
 
     <fieldset id="multipleChoice">
       <!--Prepend input with radio dials for each answer-->
     </fieldset>
 
-    <input type="submit" value="send" class="final">
+    <input type="submit" value="send" class="final" />
   </form>
 `
 
@@ -194,12 +198,10 @@ customElements.define('quiz-question',
      * @param {object} question - The object with questions and answer alternatives.
      */
     #updateHiddenClass (question) {
-      const alt1 = 'alt1'
-
-      if (alt1 in question && this.#multipleChoice.classList.contains('hidden')) {
+      if ('alternatives' in question && this.#multipleChoice.classList.contains('hidden')) {
         this.#multipleChoice.classList.toggle('hidden')
         this.#writtenAnswer.classList.toggle('hidden')
-      } else if (alt1 in question && this.#writtenAnswer.classList.contains('hidden')) {
+      } else if (!('alternatives' in question) && this.#writtenAnswer.classList.contains('hidden')) {
         this.#multipleChoice.classList.toggle('hidden')
         this.#writtenAnswer.classList.toggle('hidden')
       }

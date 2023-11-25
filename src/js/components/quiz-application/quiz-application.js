@@ -13,6 +13,9 @@ import '../quiz-question/'
 const template = document.createElement('template')
 template.innerHTML = `
 <style>
+  :host {
+    display: inline-block;
+  }
     button {
         width: 100px;
         height: 30px;
@@ -20,6 +23,10 @@ template.innerHTML = `
     }
     .hidden {
         display: none;
+    }
+
+    countdown-timer {
+      margin: 1em;
     }
 
     high-score {
@@ -113,15 +120,17 @@ customElements.define('quiz-application',
       this.#question.classList.add('hidden')
       this.#highScore.classList.add('hidden')
       this.#button.classList.add('hidden')
+
+      this.#question.addEventListener('submit', () => this.#timer.stopTimer())
+      this.#question.addEventListener('submit', () => this.#validateAnswer())
     }
 
     /**
      * Called when the element is inserted into the DOM.
      */
     connectedCallback () {
-      this.#nickname.addEventListener('submit', () => this.#handleQuestion())
+      this.#nickname.addEventListener('submit', () => this.startGame())
       this.#timer.addEventListener('timeOut', () => this.#restart())
-      this.#question.addEventListener('submit', () => this.#validateAnswer())
       this.#button.addEventListener('click', () => this.#restart())
     }
 
@@ -129,49 +138,60 @@ customElements.define('quiz-application',
      * Called when the element is removed from the DOM.
      */
     disconnectedCallback () {
-      this.#nickname.removeEventListener('submit', () => this.#handleQuestion())
+      this.#nickname.removeEventListener('submit', () => this.startGame())
       this.#timer.removeEventListener('timeOut', () => this.#restart())
-      this.#question.removeEventListener('submit', () => this.#validateAnswer())
       this.#button.removeEventListener('click', () => this.#restart())
     }
 
     /**
-     * Handles the communication bewteen the server and components regarding the questions.
+     * Starts the game from the beginning.
      */
-    async #handleQuestion () {
-    // toggle what is to be shown.
+    startGame () {
       if (!this.#nickname.classList.contains('hidden')) {
         this.#quizRules.classList.add('hidden')
         this.#nickname.classList.add('hidden')
         this.#timer.classList.toggle('hidden')
         this.#question.classList.toggle('hidden')
       }
+      this.player = this.#nickname.nickname
+      this.#handleQuestion()
+    }
 
+    /**
+     * Handles the communication bewteen the server and components regarding the questions.
+     */
+    async #handleQuestion () {
       // Fetch the question from the API.
       const response = await fetch(this.#QUIZ_API_URL)
 
-      // Check if the response is successfull.
+      // Check if the response is successful.
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`)
       }
 
       const data = await response.json()
 
-      // Extrapolate the nextURL
+      // Bind the nextURL.
       this.#QUIZ_API_URL = data.nextURL
-      // Extrapolate the time limit.
-      const limit = parseInt(data.limit)
-      this.#timer.setAttribute('time', `${limit}`)
-      // Filter the properties and push the question and alt properties into a new object.
-      const questionObject = {}
-      for (const [key, value] of Object.entries(data)) {
-        if (/^alt\d\d?$/.test(key) || /^question$/.test(key)) {
-          questionObject[key] = value
-        }
+
+      // Set the time limit attribute.
+      if ('limit' in data) {
+        this.#timer.updateTimer(data.limit)
       }
 
+      // Check the properties and push the question and alt properties into a new object.
+      const questionObject = {}
+
+      if ('alternatives' in data) {
+        questionObject.alternatives = data.alternatives
+        questionObject.question = data.question
+      } else {
+        questionObject.question = data.question
+      }
+
+      // Call the quiz-question component and countdown-timer component.
       this.#timer.startTimer()
-      // Call the quiz-question component and countdown-timer component
+
       this.#question.showQuestion(questionObject)
     }
 
@@ -179,7 +199,6 @@ customElements.define('quiz-application',
      * Handles the validation of the players answer.
      */
     async #validateAnswer () {
-      this.#timer.stopTimer()
       const userAnswer = this.#question.answer
 
       // Send the users answer and fetch the next object from the API.
@@ -191,31 +210,33 @@ customElements.define('quiz-application',
         body: JSON.stringify({ answer: userAnswer })
       })
 
+      // If the answer is wrong, or the fetch fails, if it is correct continue.
       if (!response.ok) {
+        this.#restart()
         throw new Error(`HTTP error! Status: ${response.status}`)
       }
 
       const data = await response.json()
 
-      // Validate if the answer is correct.
-      /*if (/^You are outstanding!$/.test(data.message)) {
+      // Validate if it is the last question or not.
+      if ('nextURL' in data) {
+        // If it is more questions, bind the next URL, save the score and go to the next question.
         this.#QUIZ_API_URL = data.nextURL
 
         this.score += this.#timer.timeToFinish
 
         this.#handleQuestion()
-      } else if (/^Well done!$/.test(data.message)) {
-        this.#endGame()
       } else {
-        this.#restart()
-      }*/
+        // If it is the last question save the score and end the game.
+        this.score += this.#timer.timeToFinish
+        this.#endGame()
+      }
     }
 
     /**
      * Handles the communication bewteen the webStorage and components regarding the players and scores.
      */
     async #handleScore () {
-      this.player = this.#nickname.nickname
       // Create a fetch statement for the player list in the webStorage and assign it to this.#allPlayersList also add the current player.
     }
 
@@ -261,6 +282,7 @@ customElements.define('quiz-application',
       this.player = ''
       this.score = 0
       this.#QUIZ_API_URL = 'https://courselab.lnu.se/quiz/question/1'
+      this.#timer.updateTimer('20')
     }
   }
 )

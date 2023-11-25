@@ -9,7 +9,7 @@ const template = document.createElement('template')
 template.innerHTML = `
 <style>
     :host {
-        display: inline-block;
+        display: block;
         background-color: #fce6de;
         width: 350px;
         height: min-content;

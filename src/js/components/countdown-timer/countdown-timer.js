@@ -9,7 +9,7 @@ const template = document.createElement('template')
 template.innerHTML = `
 <style>
     :host {
-        display: inline-block;
+        display: block;
         background-color: #fce6de;
         width: 150px;
         padding: 5px;
@@ -23,6 +23,7 @@ template.innerHTML = `
       color: red;
     }
 </style>
+
 <div id="container">
     <p>Time left: <b id="timer"></b></p>
 </div>
@@ -60,7 +61,7 @@ customElements.define('countdown-timer',
 
       this.#countdown = this.shadowRoot.querySelector('#timer')
       this.#timeLeft = ''
-      this.#run = false
+      this.#run = true
     }
 
     /**
@@ -76,11 +77,9 @@ customElements.define('countdown-timer',
      * Called after the element is inserted into the DOM.
      */
     connectedCallback () {
-      if (!this.hasAttribute('time')) {
-        this.setAttribute('time', '20')
-      }
-
+      this.updateTimer('20')
       this.#upgradeProperty('time')
+      this.#countdown.classList.remove('warning')
     }
 
     /**
@@ -89,6 +88,16 @@ customElements.define('countdown-timer',
     disconnectedCallbak () {
       this.stopTimer()
       this.#countdown.classList.remove('warning')
+    }
+
+    /**
+     * Updates the timer attribute.
+     *
+     * @param {string} time - a string with a number representing the time limit on the timer.
+     */
+    updateTimer (time) {
+      this.setAttribute('time', time)
+      clearInterval(this.count)
     }
 
     /**
@@ -119,30 +128,30 @@ customElements.define('countdown-timer',
      * Method that start and runs the timer.
      */
     startTimer () {
-      if (!this.#run) {
-        this.#run = true
-        let startTime = parseInt(this.getAttribute('time'), 10)
-        this.#updateRender(startTime)
+      clearInterval(this.count)
 
-        // Set an interval of 1sec and update the number shown every second.
-        this.count = setInterval(() => {
-          if (this.#run && startTime >= 0) {
-            this.#updateRender(startTime--)
-            this.#timeLeft = startTime + 1
-          }
+      let startTime = parseInt(this.getAttribute('time'), 10)
+      this.#timeLeft = startTime
 
-          // If the timer hits 0, stop it and trigger a dispatchEvent.
-          if (startTime < 0) {
-            this.stopTimer()
+      // Set an interval of 1sec and update the number shown every second.
+      this.count = setInterval(() => {
+        if (this.#run && startTime >= 0) {
+          this.#updateRender(startTime)
+          startTime--
+          this.#timeLeft = startTime
+        }
 
-            const event = new Event('timeOut', {
-              bubbles: true,
-              composed: true
-            })
-            this.dispatchEvent(event)
-          }
-        }, 1000)
-      }
+        // If the timer hits 0, stop it and trigger a dispatchEvent.
+        if (startTime < 0) {
+          this.stopTimer()
+
+          const event = new Event('timeOut', {
+            bubbles: true,
+            composed: true
+          })
+          this.dispatchEvent(event)
+        }
+      }, 1000)
     }
 
     /**
