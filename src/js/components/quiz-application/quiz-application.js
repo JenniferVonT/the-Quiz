@@ -21,6 +21,10 @@ template.innerHTML = `
     .hidden {
         display: none;
     }
+
+    high-score {
+
+    }
 </style>
 <h1>The Quiz</h1>
   <div id="quizRules">
@@ -71,6 +75,16 @@ customElements.define('quiz-application',
     #button
 
     /**
+     * All the players saved on the WebStorage including the current player.
+     */
+    #allPlayersList
+
+    /**
+     * Represents the API URL to fetch from
+     */
+    #QUIZ_API_URL
+
+    /**
      * Creates an instance of the current type.
      */
     constructor () {
@@ -80,6 +94,7 @@ customElements.define('quiz-application',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
+      // Bind the all the components and button.
       this.#quizRules = this.shadowRoot.querySelector('#quizRules')
       this.#nickname = this.shadowRoot.querySelector('nickname-form')
       this.#timer = this.shadowRoot.querySelector('countdown-timer')
@@ -87,14 +102,17 @@ customElements.define('quiz-application',
       this.#highScore = this.shadowRoot.querySelector('high-score')
       this.#button = this.shadowRoot.querySelector('button')
 
+      // Instansiate some variables to save information in.
+      this.player = ''
+      this.score = 0
+      this.#allPlayersList = {}
+      this.#QUIZ_API_URL = 'https://courselab.lnu.se/quiz/question/1'
+
       // Hide all components that aren't going to be visible in the beginning of the game.
       this.#timer.classList.add('hidden')
       this.#question.classList.add('hidden')
       this.#highScore.classList.add('hidden')
       this.#button.classList.add('hidden')
-
-      this.player = ''
-      this.score = 0
     }
 
     /**
@@ -103,7 +121,7 @@ customElements.define('quiz-application',
     connectedCallback () {
       this.#nickname.addEventListener('submit', () => this.#handleQuestion())
       this.#timer.addEventListener('timeOut', () => this.#endGame())
-      this.#question.addEventListener('submit', () => this.#handleScore())
+      this.#question.addEventListener('submit', () => this.#validateAnswer())
       this.#button.addEventListener('click', () => this.#restart())
     }
 
@@ -113,31 +131,97 @@ customElements.define('quiz-application',
     disconnectedCallback () {
       this.#nickname.removeEventListener('submit', () => this.#handleQuestion())
       this.#timer.removeEventListener('timeOut', () => this.#endGame())
-      this.#question.removeEventListener('submit', () => this.#handleScore())
+      this.#question.removeEventListener('submit', () => this.#validateAnswer())
       this.#button.removeEventListener('click', () => this.#restart())
     }
 
     /**
-     * Handles the communication bewteen the server and components regarding the questions and answers.
+     * Handles the communication bewteen the server and components regarding the questions.
      */
-    #handleQuestion() {}
+    async #handleQuestion () {
+    // toggle what is to be shown.
+      if (!this.#nickname.classList.contains('hidden')) {
+        this.#quizRules.classList.add('hidden')
+        this.#nickname.classList.add('hidden')
+        this.#timer.classList.toggle('hidden')
+        this.#question.classList.toggle('hidden')
+      }
+
+      // Fetch the question from the API.
+      const response = await fetch(this.#QUIZ_API_URL)
+
+      // Check if the response is successfull.
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      // Extrapolate the nextURL
+      this.#QUIZ_API_URL = data.nextURL
+      // Extrapolate the time limit.
+      const limit = parseInt(data.limit)
+      this.#timer.setAttribute('time', `${limit}`)
+      // Filter the properties and push the question and alt properties into a new object.
+      const questionObject = {}
+      for (const [key, value] of Object.entries(data)) {
+        if (/^alt\d\d?$/.test(key) || /^question$/.test(key)) {
+          questionObject[key] = value
+        }
+      }
+
+      this.#timer.startTimer()
+      // Call the quiz-question component and countdown-timer component
+      this.#question.showQuestion(questionObject)
+    }
+
+    /**
+     * Handles the validation of the players answer.
+     */
+    async #validateAnswer () {
+      this.#timer.stopTimer()
+      // Fetch the answer from the API.
+      // Make it JSON.
+      // Get the user answer.
+      // Validate if the answer is correct.
+      // If correct continue, otherwise wipe the playerinfo and call this.#endGame()
+      this.score += this.#timer.timeToFinish
+
+      // Go to the next question.
+      this.#handleQuestion()
+    }
 
     /**
      * Handles the communication bewteen the webStorage and components regarding the players and scores.
      */
-    #handleScore () {}
+    async #handleScore () {
+      this.player = this.#nickname.nickname
+      // Create a fetch statement for the player list in the webStorage and assign it to this.#allPlayersList also add the current player.
+    }
 
     /**
      * Ends the game and shows you the high-score list.
      */
     #endGame () {
+      this.#question.classList.toggle('hidden')
       this.#highScore.classList.toggle('hidden')
       this.#button.classList.toggle('hidden')
+      this.#timer.classList.toggle('hidden')
+      this.#handleScore()
     }
 
     /**
      * Restarts the game to the beginning.
      */
-    #restart () {}
+    #restart () {
+      this.player = ''
+      this.score = 0
+      this.#QUIZ_API_URL = 'https://courselab.lnu.se/quiz/question/1'
+
+      this.#question.classList.toggle('hidden')
+      this.#highScore.classList.toggle('hidden')
+      this.#button.classList.toggle('hidden')
+      this.#quizRules.classList.add('hidden')
+    }
   }
 )

@@ -9,8 +9,8 @@ const template = document.createElement('template')
 template.innerHTML = `
 <style>
     :host {
-        display: block;
-        background-color: #f0d9aa;
+        display: inline-block;
+        background-color: #fce6de;
         width: 150px;
         padding: 5px;
         border: solid black 2px;
@@ -66,7 +66,7 @@ customElements.define('countdown-timer',
     /**
      * Attribute to monitor for changes.
      *
-     * @returns {string[]} A string arrat of attributes to monitor.
+     * @returns {string[]} A string array of attributes to monitor.
      */
     static get observedAttributes () {
       return ['time']
@@ -119,27 +119,29 @@ customElements.define('countdown-timer',
      * Method that start and runs the timer.
      */
     startTimer () {
-      this.#run = true
-      let startTime = parseInt(this.getAttribute('time'), 10)
-      this.#updateRender(startTime)
+      if (!this.#run) {
+        this.#run = true
+        let startTime = parseInt(this.getAttribute('time'), 10)
+        this.#updateRender(startTime)
 
-      // Set an interval of 1sec and update the number shown every second.
-      this.count = setInterval(() => {
-        if (this.#run && startTime > 0) {
-          this.#updateRender(startTime--)
-          this.#timeLeft = startTime + 1
-        }
+        // Set an interval of 1sec and update the number shown every second.
+        this.count = setInterval(() => {
+          if (this.#run && startTime > -1) {
+            this.#updateRender(startTime--)
+            this.#timeLeft = startTime + 1
+          }
 
-        // If the timer hits 0, stop it and trigger a dispatchEvent.
-        if (startTime < 0) {
-          this.stopTimer()
+          // If the timer hits 0, stop it and trigger a dispatchEvent.
+          if (startTime < 0) {
+            this.stopTimer()
 
-          const event = new Event('timeOut', {
-            bubbles: true
-          })
-          this.dispatchEvent(event)
-        }
-      }, 1000)
+            const event = new Event('timeOut', {
+              bubbles: true
+            })
+            this.dispatchEvent(event)
+          }
+        }, 1000)
+      }
     }
 
     /**

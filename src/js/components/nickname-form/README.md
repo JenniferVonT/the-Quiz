@@ -14,7 +14,7 @@ Method that adds the nickname to the player when the submit button is pressed.
 
 ### `get nickname()`
 
-Gets the nickname for the component.
+Gets the nickname for the player.
 
 #### Example
 ```javascript

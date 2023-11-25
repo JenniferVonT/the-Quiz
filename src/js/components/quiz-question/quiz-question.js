@@ -33,8 +33,8 @@ template.innerHTML = `
 
 </style>
 
-<h2 id="question"></h2>
   <form id="answer" method="POST">
+    <h2 id="question"></h2>
 
     <fieldset id="writtenAnswer">
       <input type="text" class="final">

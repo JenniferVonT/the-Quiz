@@ -96,6 +96,14 @@ customElements.define('nickname-form',
       if ((inputNickname.length !== 0 || inputNickname.lenght < 20) && !(inputNickname.includes('&') || inputNickname.includes('<'))) {
         this.#nickname = inputNickname
       }
-      this.dispatchEvent('submit')
+
+      // Create a new 'submit' event.
+      const submitEvent = new Event('submit', {
+        bubbles: true,
+        composed: true
+      })
+
+      // And then dispatch it.
+      this.dispatchEvent(submitEvent)
     }
   })
