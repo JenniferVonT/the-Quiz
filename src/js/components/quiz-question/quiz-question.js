@@ -138,7 +138,12 @@ customElements.define('quiz-question',
       } else if (this.#radioInput) {
         this.#finalAnswer = this.#radioInput.value
       }
-      this.dispatchEvent('submit')
+
+      const sendAnswer = new Event('submit', {
+        bubbles: true,
+        composed: true
+      })
+      this.dispatchEvent(sendAnswer)
     }
 
     /**

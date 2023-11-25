@@ -120,7 +120,7 @@ customElements.define('quiz-application',
      */
     connectedCallback () {
       this.#nickname.addEventListener('submit', () => this.#handleQuestion())
-      this.#timer.addEventListener('timeOut', () => this.#endGame())
+      this.#timer.addEventListener('timeOut', () => this.#restart())
       this.#question.addEventListener('submit', () => this.#validateAnswer())
       this.#button.addEventListener('click', () => this.#restart())
     }
@@ -130,7 +130,7 @@ customElements.define('quiz-application',
      */
     disconnectedCallback () {
       this.#nickname.removeEventListener('submit', () => this.#handleQuestion())
-      this.#timer.removeEventListener('timeOut', () => this.#endGame())
+      this.#timer.removeEventListener('timeOut', () => this.#restart())
       this.#question.removeEventListener('submit', () => this.#validateAnswer())
       this.#button.removeEventListener('click', () => this.#restart())
     }
@@ -180,15 +180,35 @@ customElements.define('quiz-application',
      */
     async #validateAnswer () {
       this.#timer.stopTimer()
-      // Fetch the answer from the API.
-      // Make it JSON.
-      // Get the user answer.
-      // Validate if the answer is correct.
-      // If correct continue, otherwise wipe the playerinfo and call this.#endGame()
-      this.score += this.#timer.timeToFinish
+      const userAnswer = this.#question.answer
 
-      // Go to the next question.
-      this.#handleQuestion()
+      // Send the users answer and fetch the next object from the API.
+      const response = await fetch(this.#QUIZ_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ answer: userAnswer })
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      // Validate if the answer is correct.
+      /*if (/^You are outstanding!$/.test(data.message)) {
+        this.#QUIZ_API_URL = data.nextURL
+
+        this.score += this.#timer.timeToFinish
+
+        this.#handleQuestion()
+      } else if (/^Well done!$/.test(data.message)) {
+        this.#endGame()
+      } else {
+        this.#restart()
+      }*/
     }
 
     /**
@@ -214,14 +234,33 @@ customElements.define('quiz-application',
      * Restarts the game to the beginning.
      */
     #restart () {
+      if (!this.#question.classList.contains('hidden')) {
+        this.#question.classList.add('hidden')
+      }
+
+      if (!this.#timer.classList.contains('hidden')) {
+        this.#timer.classList.add('hidden')
+      }
+
+      if (!this.#highScore.classList.contains('hidden')) {
+        this.#highScore.classList.add('hidden')
+      }
+
+      if (!this.#button.classList.contains('hidden')) {
+        this.#button.classList.add('hidden')
+      }
+
+      if (this.#quizRules.classList.contains('hidden')) {
+        this.#quizRules.classList.remove('hidden')
+      }
+
+      if (this.#nickname.classList.contains('hidden')) {
+        this.#nickname.classList.remove('hidden')
+      }
+
       this.player = ''
       this.score = 0
       this.#QUIZ_API_URL = 'https://courselab.lnu.se/quiz/question/1'
-
-      this.#question.classList.toggle('hidden')
-      this.#highScore.classList.toggle('hidden')
-      this.#button.classList.toggle('hidden')
-      this.#quizRules.classList.add('hidden')
     }
   }
 )

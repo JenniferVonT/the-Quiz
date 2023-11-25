@@ -126,7 +126,7 @@ customElements.define('countdown-timer',
 
         // Set an interval of 1sec and update the number shown every second.
         this.count = setInterval(() => {
-          if (this.#run && startTime > -1) {
+          if (this.#run && startTime >= 0) {
             this.#updateRender(startTime--)
             this.#timeLeft = startTime + 1
           }
@@ -136,7 +136,8 @@ customElements.define('countdown-timer',
             this.stopTimer()
 
             const event = new Event('timeOut', {
-              bubbles: true
+              bubbles: true,
+              composed: true
             })
             this.dispatchEvent(event)
           }
