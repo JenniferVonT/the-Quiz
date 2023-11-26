@@ -109,7 +109,6 @@ customElements.define('quiz-question',
       this.#form = this.shadowRoot.querySelector('form')
       this.#finalAnswer = {}
       this.#singleInput = this.shadowRoot.querySelector('.final')
-
       this.#multipleChoice.classList.add('hidden')
     }
 
@@ -137,10 +136,10 @@ customElements.define('quiz-question',
 
       this.#radioInput = this.shadowRoot.querySelector('input[name="answers"]:checked')
 
-      if (this.#singleInput.value.length !== 0) {
+      if (!this.#multipleChoice.classList.contains('hidden')) {
+        this.#finalAnswer = this.#radioInput ? this.#radioInput.value.split(':')[0].trim() : null
+      } else {
         this.#finalAnswer = this.#singleInput.value
-      } else if (this.#radioInput) {
-        this.#finalAnswer = this.#radioInput.value
       }
 
       const sendAnswer = new Event('submit', {
@@ -148,6 +147,17 @@ customElements.define('quiz-question',
         composed: true
       })
       this.dispatchEvent(sendAnswer)
+
+      this.reset()
+    }
+
+    /**
+     * Resets the state of the quiz-question component.
+     */
+    reset () {
+      this.#singleInput.value = ''
+      const radioInputs = this.shadowRoot.querySelectorAll('label')
+      radioInputs.forEach(input => input.remove())
     }
 
     /**
@@ -198,10 +208,10 @@ customElements.define('quiz-question',
      * @param {object} question - The object with questions and answer alternatives.
      */
     #updateHiddenClass (question) {
-      if ('alternatives' in question && this.#multipleChoice.classList.contains('hidden')) {
+      if ('alt1' in question && this.#multipleChoice.classList.contains('hidden')) {
         this.#multipleChoice.classList.toggle('hidden')
         this.#writtenAnswer.classList.toggle('hidden')
-      } else if (!('alternatives' in question) && this.#writtenAnswer.classList.contains('hidden')) {
+      } else if (!('alt1' in question) && this.#writtenAnswer.classList.contains('hidden')) {
         this.#multipleChoice.classList.toggle('hidden')
         this.#writtenAnswer.classList.toggle('hidden')
       }

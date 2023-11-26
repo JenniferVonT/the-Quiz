@@ -41,7 +41,7 @@ template.innerHTML = `
   </div>
   <nickname-form></nickname-form>
   <quiz-question></quiz-question>
-  <countdown-timer></countdown-timer>
+  <countdown-timer time="20"></countdown-timer>
   <high-score></high-score>
   <button>Try Again!</button>
 `
@@ -114,6 +114,7 @@ customElements.define('quiz-application',
       this.score = 0
       this.#allPlayersList = {}
       this.#QUIZ_API_URL = 'https://courselab.lnu.se/quiz/question/1'
+      this.resetQuestion = { question: '', alt1: '' }
 
       // Hide all components that aren't going to be visible in the beginning of the game.
       this.#timer.classList.add('hidden')
@@ -183,15 +184,19 @@ customElements.define('quiz-application',
       const questionObject = {}
 
       if ('alternatives' in data) {
-        questionObject.alternatives = data.alternatives
         questionObject.question = data.question
+
+        const altKeys = Object.keys(data.alternatives)
+
+        for (const alt of altKeys) {
+          questionObject[alt] = data.alternatives[alt].toString()
+        }
       } else {
         questionObject.question = data.question
       }
 
       // Call the quiz-question component and countdown-timer component.
       this.#timer.startTimer()
-
       this.#question.showQuestion(questionObject)
     }
 
@@ -255,6 +260,8 @@ customElements.define('quiz-application',
      * Restarts the game to the beginning.
      */
     #restart () {
+      this.#handleQuestion(this.resetQuestion)
+
       if (!this.#question.classList.contains('hidden')) {
         this.#question.classList.add('hidden')
       }

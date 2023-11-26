@@ -129,6 +129,7 @@ customElements.define('countdown-timer',
      */
     startTimer () {
       clearInterval(this.count)
+      this.#run = true
 
       let startTime = parseInt(this.getAttribute('time'), 10)
       this.#timeLeft = startTime
@@ -137,8 +138,8 @@ customElements.define('countdown-timer',
       this.count = setInterval(() => {
         if (this.#run && startTime >= 0) {
           this.#updateRender(startTime)
-          startTime--
           this.#timeLeft = startTime
+          startTime--
         }
 
         // If the timer hits 0, stop it and trigger a dispatchEvent.
@@ -155,11 +156,16 @@ customElements.define('countdown-timer',
     }
 
     /**
-     * Method that stops the timer.
+     * Method that stops the timer and resets everything.
      */
     stopTimer () {
       this.#run = false
-      clearInterval(this.count)
+
+      if (this.#countdown.classList.contains('warning')) {
+        this.#countdown.classList.remove('warning')
+      }
+
+      this.updateTimer('20')
     }
 
     /**
