@@ -45,7 +45,7 @@ template.innerHTML = `
     </fieldset>
 
     <fieldset id="multipleChoice">
-      <!--Prepend input with radio dials for each answer-->
+      <!--Append input with type="radio" for each answer-->
     </fieldset>
 
     <input type="submit" value="send" class="final" />
@@ -136,18 +136,21 @@ customElements.define('quiz-question',
 
       this.#radioInput = this.shadowRoot.querySelector('input[name="answers"]:checked')
 
+      // Check whether it is a multiple choice question or not and save the correct input accordingly.
       if (!this.#multipleChoice.classList.contains('hidden')) {
         this.#finalAnswer = this.#radioInput ? this.#radioInput.value.split(':')[0].trim() : null
       } else {
         this.#finalAnswer = this.#singleInput.value
       }
 
+      // Dispatch a customEvent to let listening components now that an answer has been submittet.
       const sendAnswer = new Event('submit', {
         bubbles: true,
         composed: true
       })
       this.dispatchEvent(sendAnswer)
 
+      // Finish by reset'ing the input fields.
       this.reset()
     }
 
@@ -199,7 +202,7 @@ customElements.define('quiz-question',
           this.#multipleChoice.append(label)
         }
 
-        // Focus on the correct input element.
+        // Put the focus on the correct input element.
         const firstRadioInput = this.#multipleChoice.querySelector('input[type="radio"]')
         if (firstRadioInput) {
           firstRadioInput.focus()
@@ -218,9 +221,12 @@ customElements.define('quiz-question',
      * @param {object} question - The object with questions and answer alternatives.
      */
     #updateHiddenClass (question) {
+      // If the question object contains any alternative answers it is a multiple choice and should show the multiple choice layout.
       if ('alt1' in question && this.#multipleChoice.classList.contains('hidden')) {
         this.#multipleChoice.classList.toggle('hidden')
         this.#writtenAnswer.classList.toggle('hidden')
+
+        // If it isn't a multiple choice question it should show the write in answer layout.
       } else if (!('alt1' in question) && this.#writtenAnswer.classList.contains('hidden')) {
         this.#multipleChoice.classList.toggle('hidden')
         this.#writtenAnswer.classList.toggle('hidden')

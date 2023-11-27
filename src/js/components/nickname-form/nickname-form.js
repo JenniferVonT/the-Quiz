@@ -55,9 +55,8 @@ customElements.define('nickname-form',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
-      // Get the form element in the shadow root.
+      // Bind the form and input element in the shadow root.
       this.#form = this.shadowRoot.querySelector('form')
-
       this.#input = this.shadowRoot.querySelector('#nickname')
 
       // Set the default nickname to anonymous.
@@ -111,6 +110,7 @@ customElements.define('nickname-form',
 
       // And then dispatch it.
       this.dispatchEvent(submitEvent)
+      // Finish by wiping the input field.
       this.#input.value = ''
     }
   })

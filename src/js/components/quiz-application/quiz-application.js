@@ -96,7 +96,7 @@ customElements.define('quiz-application',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
-      // Bind the all the components and button.
+      // Bind the all the relevant components and reset button.
       this.#quizRules = this.shadowRoot.querySelector('#quizRules')
       this.#nickname = this.shadowRoot.querySelector('nickname-form')
       this.#timer = this.shadowRoot.querySelector('countdown-timer')
@@ -115,6 +115,7 @@ customElements.define('quiz-application',
       this.#highScore.classList.add('hidden')
       this.#button.classList.add('hidden')
 
+      // Add event listeners to know when a question has been answered.
       this.#question.addEventListener('submit', () => this.#timer.stopTimer())
       this.#question.addEventListener('submit', () => this.#validateAnswer())
     }
@@ -141,12 +142,15 @@ customElements.define('quiz-application',
      * Starts the game from the beginning.
      */
     startGame () {
+      // If the nickname is not hidden yet, hide it and show the relevant game components.
       if (!this.#nickname.classList.contains('hidden')) {
         this.#quizRules.classList.add('hidden')
         this.#nickname.classList.add('hidden')
         this.#timer.classList.toggle('hidden')
         this.#question.classList.toggle('hidden')
       }
+
+      // Get the current player nickname and start with the first question.
       this.player = this.#nickname.nickname
       this.#handleQuestion()
     }
@@ -165,17 +169,17 @@ customElements.define('quiz-application',
 
       const data = await response.json()
 
-      // Set the time limit attribute and start the timer.
+      // Set the time limit attribute if there is a limit in the data object.
       if ('limit' in data) {
         this.#timer.updateTimer(data.limit)
       }
 
       this.#timer.startTimer()
 
-      // Bind the nextURL.
+      // Bind the nextURL for the answer validation.
       this.#QUIZ_API_URL = data.nextURL
 
-      // Check the properties and push the question and alt properties into a new object.
+      // Check the properties and push the question and eventual alt properties into a new object.
       const questionObject = {}
 
       if ('alternatives' in data) {
@@ -209,7 +213,7 @@ customElements.define('quiz-application',
         body: JSON.stringify({ answer: userAnswer })
       })
 
-      // If the answer is wrong, or the fetch fails, if it is correct continue.
+      // If the answer is wrong, or the fetch fails restart the quiz. If it is correct continue.
       if (!response.ok) {
         this.#restart()
         throw new Error(`HTTP error! Status: ${response.status}`)
@@ -219,7 +223,7 @@ customElements.define('quiz-application',
 
       // Validate if it is the last question or not.
       if ('nextURL' in data) {
-        // If it is more questions, bind the next URL, save the score and go to the next question.
+        // If there is more questions, bind the next URL, save the score and go to the next question.
         this.#QUIZ_API_URL = data.nextURL
 
         this.score += this.#timer.timeToFinish
@@ -233,7 +237,7 @@ customElements.define('quiz-application',
     }
 
     /**
-     * Handles the communication bewteen the webStorage and components regarding the players and scores.
+     * Handles the communication bewteen the webStorage and the high-score component to render the high-score list.
      */
     async #handleScore () {
       // Get all the players and their scores stored in localStorage.
@@ -245,13 +249,13 @@ customElements.define('quiz-application',
       // Save the updated list back to localStorage.
       localStorage.setItem('quiz_highscore', JSON.stringify(storedPlayers))
 
-      // Convert the storedPlayers array into an object with the correct structure.
+      // Convert the storedPlayers array into an object with the correct structure for the high-school component.
       const playerScoresObject = storedPlayers.reduce((acc, player) => {
         acc[player.player] = player.score
         return acc
       }, {})
 
-      // Fetch the high scores and update the high-score component.
+      // Update the high-score component to render the list.
       this.#highScore.buildList(playerScoresObject)
     }
 
@@ -260,6 +264,7 @@ customElements.define('quiz-application',
      */
     #endGame () {
       this.#handleScore()
+      // Toggle the hidden class to show and hide the relevant components.
       this.#question.classList.toggle('hidden')
       this.#highScore.classList.toggle('hidden')
       this.#button.classList.toggle('hidden')
@@ -270,6 +275,7 @@ customElements.define('quiz-application',
      * Restarts the game to the beginning.
      */
     #restart () {
+      // Check what components are hidden or not and change accordingly so it's back to the start.
       if (!this.#question.classList.contains('hidden')) {
         this.#question.classList.add('hidden')
       }
@@ -294,6 +300,7 @@ customElements.define('quiz-application',
         this.#nickname.classList.remove('hidden')
       }
 
+      // Wipe all the player info and reset the API URL and timer.
       this.player = ''
       this.score = 0
       this.#QUIZ_API_URL = 'https://courselab.lnu.se/quiz/question/1'

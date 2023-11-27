@@ -72,12 +72,12 @@ customElements.define('high-score',
 
       players.sort((a, b) => a[1] - b[1])
 
-      // Start a counter and append list items with the top 5 players into the ol list.
+      // Start a counter and append list items with the top 5 players into the #scoreList element.
       for (let i = 0; i < 5; i++) {
         const liElement = document.createElement('li')
         const player = players[i]
 
-        if (player !== undefined) {
+        if (player) {
           const playerAndScore = document.createTextNode(`${player[0]}: ${player[1]}`)
           liElement.append(playerAndScore)
           this.#scoreList.append(liElement)
