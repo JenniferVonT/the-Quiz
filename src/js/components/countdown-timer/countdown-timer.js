@@ -50,6 +50,11 @@ customElements.define('countdown-timer',
     #run
 
     /**
+     * Represents the time the timer starts on.
+     */
+    #startTime
+
+    /**
      * Creates an instance of the current type.
      */
     constructor () {
@@ -60,6 +65,7 @@ customElements.define('countdown-timer',
         .appendChild(template.content.cloneNode(true))
 
       this.#countdown = this.shadowRoot.querySelector('#timer')
+      this.#startTime = ''
       this.#timeLeft = ''
       this.#run = true
     }
@@ -120,8 +126,7 @@ customElements.define('countdown-timer',
      * @returns {number} - The number of seconds.
      */
     get timeToFinish () {
-      const startTotal = parseInt(this.getAttribute('time'), 10)
-      return startTotal - this.#timeLeft
+      return this.#startTime - this.#timeLeft
     }
 
     /**
@@ -131,19 +136,20 @@ customElements.define('countdown-timer',
       clearInterval(this.count)
       this.#run = true
 
-      let startTime = parseInt(this.getAttribute('time'), 10)
-      this.#timeLeft = startTime
+      let startTime = parseInt(this.getAttribute('time'))
+      this.#updateRender(startTime)
 
       // Set an interval of 1sec and update the number shown every second.
       this.count = setInterval(() => {
         if (this.#run && startTime >= 0) {
-          this.#updateRender(startTime)
           this.#timeLeft = startTime
+          this.#updateRender(startTime)
           startTime--
         }
 
         // If the timer hits 0, stop it and trigger a dispatchEvent.
         if (startTime < 0) {
+          this.#timeLeft = 0
           this.stopTimer()
 
           const event = new Event('timeOut', {
@@ -164,6 +170,7 @@ customElements.define('countdown-timer',
       if (this.#countdown.classList.contains('warning')) {
         this.#countdown.classList.remove('warning')
       }
+      this.#startTime = parseInt(this.getAttribute('time'))
 
       this.updateTimer('20')
     }

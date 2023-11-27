@@ -42,6 +42,11 @@ customElements.define('nickname-form',
     #form
 
     /**
+     * Represents the nickname input field.
+     */
+    #input
+
+    /**
      * Creates an instance of the current type.
      */
     constructor () {
@@ -53,6 +58,8 @@ customElements.define('nickname-form',
 
       // Get the form element in the shadow root.
       this.#form = this.shadowRoot.querySelector('form')
+
+      this.#input = this.shadowRoot.querySelector('#nickname')
 
       // Set the default nickname to anonymous.
       this.#nickname = 'anonymous'
@@ -105,5 +112,6 @@ customElements.define('nickname-form',
 
       // And then dispatch it.
       this.dispatchEvent(submitEvent)
+      this.#input.value = ''
     }
   })

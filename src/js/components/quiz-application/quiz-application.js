@@ -114,7 +114,6 @@ customElements.define('quiz-application',
       this.score = 0
       this.#allPlayersList = {}
       this.#QUIZ_API_URL = 'https://courselab.lnu.se/quiz/question/1'
-      this.resetQuestion = { question: '', alt1: '' }
 
       // Hide all components that aren't going to be visible in the beginning of the game.
       this.#timer.classList.add('hidden')
@@ -175,11 +174,6 @@ customElements.define('quiz-application',
       // Bind the nextURL.
       this.#QUIZ_API_URL = data.nextURL
 
-      // Set the time limit attribute.
-      if ('limit' in data) {
-        this.#timer.updateTimer(data.limit)
-      }
-
       // Check the properties and push the question and alt properties into a new object.
       const questionObject = {}
 
@@ -193,6 +187,11 @@ customElements.define('quiz-application',
         }
       } else {
         questionObject.question = data.question
+      }
+
+      // Set the time limit attribute.
+      if ('limit' in data) {
+        this.#timer.updateTimer(data.limit)
       }
 
       // Call the quiz-question component and countdown-timer component.
@@ -243,6 +242,9 @@ customElements.define('quiz-application',
      */
     async #handleScore () {
       // Create a fetch statement for the player list in the webStorage and assign it to this.#allPlayersList also add the current player.
+
+      // Call the method to build the list.
+      this.#highScore.buildList()
     }
 
     /**
@@ -260,8 +262,6 @@ customElements.define('quiz-application',
      * Restarts the game to the beginning.
      */
     #restart () {
-      this.#handleQuestion(this.resetQuestion)
-
       if (!this.#question.classList.contains('hidden')) {
         this.#question.classList.add('hidden')
       }
