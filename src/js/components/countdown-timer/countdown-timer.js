@@ -157,6 +157,12 @@ customElements.define('countdown-timer',
             composed: true
           })
           this.dispatchEvent(event)
+
+          const timeStartedEvent = new Event('timeStarted', {
+            bubbles: true,
+            composed: true
+          })
+          this.dispatchEvent(timeStartedEvent)
         }
       }, 1000)
     }

@@ -59,6 +59,10 @@ customElements.define('high-score',
      * @param {object} listObject - An object with a list of player nicknames and their scores.
      */
     buildList (listObject) {
+      // Check if there are existing li elements and remove them.
+      const existingLiElements = this.#scoreList.querySelectorAll('li')
+      existingLiElements.forEach((li) => li.remove())
+
       // Turn the object into an array and sort it from smallest to largest score.
       const players = Object.entries(listObject)
 

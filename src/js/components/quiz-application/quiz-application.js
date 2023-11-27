@@ -171,6 +171,13 @@ customElements.define('quiz-application',
 
       const data = await response.json()
 
+      // Set the time limit attribute and start the timer.
+      if ('limit' in data) {
+        this.#timer.updateTimer(data.limit)
+      }
+
+      this.#timer.startTimer()
+
       // Bind the nextURL.
       this.#QUIZ_API_URL = data.nextURL
 
@@ -189,13 +196,7 @@ customElements.define('quiz-application',
         questionObject.question = data.question
       }
 
-      // Set the time limit attribute.
-      if ('limit' in data) {
-        this.#timer.updateTimer(data.limit)
-      }
-
-      // Call the quiz-question component and countdown-timer component.
-      this.#timer.startTimer()
+      // Render the question and eventual answer alternatives.
       this.#question.showQuestion(questionObject)
     }
 
@@ -241,10 +242,11 @@ customElements.define('quiz-application',
      * Handles the communication bewteen the webStorage and components regarding the players and scores.
      */
     async #handleScore () {
-      // Create a fetch statement for the player list in the webStorage and assign it to this.#allPlayersList also add the current player.
-
+      // Get all the players and their scores stored in the WebStorage.
+      // Put all players and their scores + the current player and their score into the this.#allPlayersList.
       // Call the method to build the list.
-      this.#highScore.buildList()
+      this.#allPlayersList[this.player] = this.score
+      this.#highScore.buildList(this.#allPlayersList)
     }
 
     /**
