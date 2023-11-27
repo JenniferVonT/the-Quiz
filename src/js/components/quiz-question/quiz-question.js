@@ -41,7 +41,7 @@ template.innerHTML = `
     <h2 id="question"></h2>
 
     <fieldset id="writtenAnswer">
-      <input type="text" class="final" autocomplete="off" autofocus />
+      <input type="text" class="final" autocomplete="off" />
     </fieldset>
 
     <fieldset id="multipleChoice">
@@ -180,10 +180,9 @@ customElements.define('quiz-question',
       const { question, ...alternatives } = questionObject
 
       this.#question.textContent = question
-      const alt1 = 'alt1'
 
       // When it is a multiple choice question, create input elements.
-      if (alt1 in questionObject) {
+      if ('alt1' in questionObject) {
         for (const [key, value] of Object.entries(alternatives)) {
           // Create all neccessary elements and set attributes.
           const input = document.createElement('input')
@@ -198,6 +197,17 @@ customElements.define('quiz-question',
           label.append(input)
 
           this.#multipleChoice.append(label)
+        }
+
+        // Focus on the correct input element.
+        const firstRadioInput = this.#multipleChoice.querySelector('input[type="radio"]')
+        if (firstRadioInput) {
+          firstRadioInput.focus()
+        }
+      } else {
+        const writtenAnswerInput = this.#writtenAnswer.querySelector('input')
+        if (writtenAnswerInput) {
+          writtenAnswerInput.focus()
         }
       }
     }

@@ -82,11 +82,6 @@ customElements.define('quiz-application',
     #button
 
     /**
-     * All the players saved on the WebStorage including the current player.
-     */
-    #allPlayersList
-
-    /**
      * Represents the API URL to fetch from
      */
     #QUIZ_API_URL
@@ -242,13 +237,13 @@ customElements.define('quiz-application',
      */
     async #handleScore () {
       // Get all the players and their scores stored in localStorage.
-      const storedPlayers = JSON.parse(localStorage.getItem('playerScores')) || []
+      const storedPlayers = JSON.parse(localStorage.getItem('quiz_highscore')) || []
 
       // Add the current player and their score.
       storedPlayers.push({ player: this.player, score: this.score })
 
       // Save the updated list back to localStorage.
-      localStorage.setItem('playerScores', JSON.stringify(storedPlayers))
+      localStorage.setItem('quiz_highscore', JSON.stringify(storedPlayers))
 
       // Convert the storedPlayers array into an object with the correct structure.
       const playerScoresObject = storedPlayers.reduce((acc, player) => {
