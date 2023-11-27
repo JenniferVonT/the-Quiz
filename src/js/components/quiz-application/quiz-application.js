@@ -110,9 +110,8 @@ customElements.define('quiz-application',
       this.#button = this.shadowRoot.querySelector('button')
 
       // Instansiate some variables to save information in.
-      this.player = ''
+      this.player = 'Anonymous' // Set the default to Anonymous.
       this.score = 0
-      this.#allPlayersList = {}
       this.#QUIZ_API_URL = 'https://courselab.lnu.se/quiz/question/1'
 
       // Hide all components that aren't going to be visible in the beginning of the game.
@@ -242,22 +241,34 @@ customElements.define('quiz-application',
      * Handles the communication bewteen the webStorage and components regarding the players and scores.
      */
     async #handleScore () {
-      // Get all the players and their scores stored in the WebStorage.
-      // Put all players and their scores + the current player and their score into the this.#allPlayersList.
-      // Call the method to build the list.
-      this.#allPlayersList[this.player] = this.score
-      this.#highScore.buildList(this.#allPlayersList)
+      // Get all the players and their scores stored in localStorage.
+      const storedPlayers = JSON.parse(localStorage.getItem('playerScores')) || []
+
+      // Add the current player and their score.
+      storedPlayers.push({ player: this.player, score: this.score })
+
+      // Save the updated list back to localStorage.
+      localStorage.setItem('playerScores', JSON.stringify(storedPlayers))
+
+      // Convert the storedPlayers array into an object with the correct structure.
+      const playerScoresObject = storedPlayers.reduce((acc, player) => {
+        acc[player.player] = player.score
+        return acc
+      }, {})
+
+      // Fetch the high scores and update the high-score component.
+      this.#highScore.buildList(playerScoresObject)
     }
 
     /**
      * Ends the game and shows you the high-score list.
      */
     #endGame () {
+      this.#handleScore()
       this.#question.classList.toggle('hidden')
       this.#highScore.classList.toggle('hidden')
       this.#button.classList.toggle('hidden')
       this.#timer.classList.toggle('hidden')
-      this.#handleScore()
     }
 
     /**
