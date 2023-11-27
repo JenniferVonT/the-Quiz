@@ -1,13 +1,13 @@
 # &lt;quiz-question&gt;
 
-A web component that represents quiz questions and/or answers.
+A web component that represents quiz questions and eventual answer alternatives.
 
 ## Methods
 
 ### `showQuestion(object)`
 
 A method that takes an object with a question and none or several answer alternatives and renders them for the user to choose/write.
- - No answer: writing input, user cannot see any answers.
+ - No answer alternatives: writing input, user cannot see any answers.
  - Multiple answer alternatives: radio dials to choose from all the alternatives.
 
 #### Parameters
@@ -29,19 +29,19 @@ quiz-question.showQuestion(question)
 
 ### `get answer()`
 
-Gets the answer the user gave for the question.
+Gets the answer the user gave for the question, if multiple choice the answer will be the alternative (so it will for example give "alt1" and not "Yes" as the answer).
 
 #### Example
 ```javascript
-// Get the answer the USER gave, it does not validate if the answer is correct or not.
+// Get the answer the user gave, it does not validate if the answer is correct or not.
 const answer = quiz-question.answer
-console.log(answer) // Output example: alt2: 'no'
+console.log(answer) // Output example: 'alt2'
 ```
 
 ## Example
 
 ```html
-<quiz-question></quiz-question>
+&lt;quiz-question&gt;&lt;/quiz-question&gt;
 ```
 The first is the layout for a question with no answer alternatives sent and the second for a question with multiple answer alternative
 

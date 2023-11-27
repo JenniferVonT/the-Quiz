@@ -21,7 +21,7 @@ input {
 <h2>&#9829; Write player nickname to begin! &#9829;</h2>
 
 <form id="sendNickname" method="POST">
-  <input type="text" id="nickname" autocomplete="off" autofocus placeholder="Write and press enter"/>
+  <input type="text" id="nickname" autocomplete="off" placeholder="Write and press enter" autofocus />
 </form>
 `
 

@@ -9,7 +9,7 @@ A web component that represents a high-score list of the top 5 players.
 A method that takes an object with all players and their scores and builds a high-score list with the top 5 players.
 
 #### Parameters
- - `listObject` (object): An object containing player nicknames and scores.
+ - `listObject` (object): An object containing player nicknames and scores. Keys are player nicknames and values are their respective scores.
 
 #### Example
 ```javascript
@@ -21,13 +21,14 @@ const playerList = {
     // ...
 }
 
+// Build the high-score list based on the provided player list.
 high-score.buildList(playerList)
 ```
 
 ## Example
 
 ```html
-<high-score></high-score>
+&lt;high-score&gt;&lt;/high-score&gt;
 ```
 
 ![Example](./img/highScoreComponent.PNG)

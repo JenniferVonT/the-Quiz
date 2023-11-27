@@ -83,41 +83,30 @@ customElements.define('countdown-timer',
      * Called after the element is inserted into the DOM.
      */
     connectedCallback () {
-      this.updateTimer('20')
-      this.#upgradeProperty('time')
+      // Check if the time attribute has been set directly into the element in html, if not put the default time of 20seconds.
+      if (!this.hasAttribute('time')) {
+        this.updateTimer('20')
+      }
+
       this.#countdown.classList.remove('warning')
     }
 
     /**
      * Called after the element has been removed from the DOM.
      */
-    disconnectedCallbak () {
+    disconnectedCallback () {
       this.stopTimer()
       this.#countdown.classList.remove('warning')
     }
 
     /**
-     * Updates the timer attribute.
+     * Updates the time attribute.
      *
      * @param {string} time - a string with a number representing the time limit on the timer.
      */
     updateTimer (time) {
       this.setAttribute('time', time)
       clearInterval(this.count)
-    }
-
-    /**
-     * Run the specified instance property
-     * through the class setter.
-     *
-     * @param {string} prop - The property's name.
-     */
-    #upgradeProperty (prop) {
-      if (Object.hasOwnProperty.call(this, prop)) {
-        const value = this[prop]
-        delete this[prop]
-        this[prop] = value
-      }
     }
 
     /**

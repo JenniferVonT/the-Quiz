@@ -6,7 +6,7 @@ A web component that represents a countdown timer.
 
 ### `time`
 
-A string attribute, if present, that contains the time in seconds set to the timer.
+A string attribute representing the time in seconds set for the timer.
 
 Default value: 20 seconds.
 
@@ -14,7 +14,7 @@ Default value: 20 seconds.
 
 ### `startTimer()`
 
-A method that starts the timer.
+Starts the countdown timer and updates the display every second.
 
 #### Example
 
@@ -32,9 +32,9 @@ Get the time it took from start to stop.
 #### Example
 
 ```javascript
-// Get the time that is left on the timer.
+// Get the time it takes from the start/limit until it stops.
 const timeLeft = countdown-timer.timeLeft
-console.log(timeLeft) // Output example: 10
+console.log(timeLeft) // Output example: 10. (example if the start/limit is 15 and the timer stops at 5sec left.)
 ```
 
 ## Custom Events
@@ -57,7 +57,7 @@ document.addEventListener('timeOut', () => function())
 ## Example
 
 ```html
-<countdown-timer time="15"></countdown-timer>
+&lt;countdown-timer time="15"&gt;&lt;/countdown-timer&gt;
 ```
 
 ![Example](./img/countdown.PNG)
