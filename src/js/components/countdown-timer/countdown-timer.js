@@ -131,9 +131,9 @@ customElements.define('countdown-timer',
       // Set an interval of 1sec and update the number shown every second.
       this.count = setInterval(() => {
         if (this.#run && startTime >= 0) {
+          startTime--
           this.#timeLeft = startTime
           this.#updateRender(startTime)
-          startTime--
         }
 
         // If the timer hits 0, stop it and trigger a dispatchEvent.
