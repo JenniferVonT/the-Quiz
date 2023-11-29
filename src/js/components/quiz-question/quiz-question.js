@@ -11,7 +11,7 @@ template.innerHTML = `
     :host {
         display: inline-block;
         background-color: rgba(0, 0, 0, 0);
-        width: 600px;
+        width: 650px;
     }
 
     fieldset {
@@ -33,6 +33,7 @@ template.innerHTML = `
 
     h2 {
       height: 20px;
+      padding: 1em;
     }
 
 </style>
